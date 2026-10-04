@@ -61,7 +61,7 @@ tg?.ready();
 tg?.expand();
 
 let P = {};
-try { P = JSON.parse(decodeURIComponent(location.hash.slice(1))); } catch {}
+try { P = JSON.parse(new URLSearchParams(location.search).get("d")); } catch {}  // в # Telegram пишет своё
 const meta = await fetch("items.json").then(r => r.json());
 const ITEMS = Object.fromEntries(meta.items.map(it => [it.id, it]));
 const n = P.n || 0;

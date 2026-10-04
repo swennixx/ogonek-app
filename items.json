@@ -1,0 +1,146 @@
+{
+ "tiers": [
+  365,
+  100,
+  30,
+  7,
+  1
+ ],
+ "order": [
+  "neck",
+  "face",
+  "eyes",
+  "ears",
+  "hair",
+  "head",
+  "above"
+ ],
+ "face": [
+  512,
+  640
+ ],
+ "size": 1024,
+ "sprite": 440,
+ "items": [
+  {
+   "id": "bowtie",
+   "day": 3,
+   "slot": "neck",
+   "name": "бабочка",
+   "dx": 0,
+   "dy": 165
+  },
+  {
+   "id": "cap",
+   "day": 5,
+   "slot": "head",
+   "name": "кепка",
+   "dx": 0,
+   "dy": -150
+  },
+  {
+   "id": "sunglasses",
+   "day": 7,
+   "slot": "eyes",
+   "name": "тёмные очки",
+   "dx": 0,
+   "dy": -5
+  },
+  {
+   "id": "flower",
+   "day": 10,
+   "slot": "hair",
+   "name": "цветок",
+   "dx": 125,
+   "dy": -95
+  },
+  {
+   "id": "party_hat",
+   "day": 14,
+   "slot": "head",
+   "name": "праздничный колпак",
+   "dx": 0,
+   "dy": -190
+  },
+  {
+   "id": "mustache",
+   "day": 21,
+   "slot": "face",
+   "name": "усы",
+   "dx": 0,
+   "dy": 70
+  },
+  {
+   "id": "crown",
+   "day": 30,
+   "slot": "head",
+   "name": "корона",
+   "dx": 0,
+   "dy": -160
+  },
+  {
+   "id": "scarf",
+   "day": 40,
+   "slot": "neck",
+   "name": "шарф",
+   "dx": 0,
+   "dy": 170
+  },
+  {
+   "id": "headphones",
+   "day": 50,
+   "slot": "ears",
+   "name": "наушники",
+   "dx": 0,
+   "dy": -20
+  },
+  {
+   "id": "round_glasses",
+   "day": 75,
+   "slot": "eyes",
+   "name": "круглые очки",
+   "dx": 0,
+   "dy": 0
+  },
+  {
+   "id": "halo",
+   "day": 100,
+   "slot": "above",
+   "name": "нимб",
+   "dx": 0,
+   "dy": -330
+  },
+  {
+   "id": "top_hat",
+   "day": 150,
+   "slot": "head",
+   "name": "цилиндр",
+   "dx": 0,
+   "dy": -185
+  },
+  {
+   "id": "monocle",
+   "day": 200,
+   "slot": "eyes",
+   "name": "монокль",
+   "dx": 0,
+   "dy": 0
+  },
+  {
+   "id": "chain",
+   "day": 250,
+   "slot": "neck",
+   "name": "золотая цепь",
+   "dx": 0,
+   "dy": 140
+  },
+  {
+   "id": "hair_bow",
+   "day": 300,
+   "slot": "hair",
+   "name": "бантик",
+   "dx": -120,
+   "dy": -100
+  }
+ ]
+}

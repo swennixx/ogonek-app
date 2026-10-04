@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Огонёк</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: var(--tg-theme-bg-color, #16161e);
+    --text: var(--tg-theme-text-color, #fff);
+    --hint: var(--tg-theme-hint-color, #8a8a99);
+    --card: var(--tg-theme-secondary-bg-color, #24242e);
+    --accent: var(--tg-theme-button-color, #ff6a00);
+    --accent-text: var(--tg-theme-button-text-color, #fff);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; padding: 12px 16px 24px; background: var(--bg); color: var(--text);
+         font: 15px/1.3 -apple-system, system-ui, sans-serif; }
+  .wrap { max-width: 420px; margin: 0 auto; }
+  #stage { position: relative; width: 100%; aspect-ratio: 1; border-radius: 20px; overflow: hidden;
+           touch-action: none; background: #16161e; }
+  #stage img { position: absolute; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+  #base { inset: 0; width: 100%; height: 100%; }
+  .item.sel { filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px #fff8); }
+  #badge { position: absolute; left: 50%; bottom: 3%; transform: translateX(-50%); padding: 2px 18px;
+           border: 3px solid var(--accent); border-radius: 999px; background: #1e1e28; color: #fff;
+           font-weight: 700; font-size: 22px; }
+  .hint { margin: 8px 0; color: var(--hint); font-size: 13px; text-align: center; }
+  .row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+  .row span { width: 72px; color: var(--hint); font-size: 13px; }
+  .row input { flex: 1; accent-color: var(--accent); }
+  #chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip { display: flex; align-items: center; gap: 6px; padding: 6px 10px 6px 6px; border: 0;
+          border-radius: 12px; background: var(--card); color: var(--text); font: inherit; font-size: 14px; }
+  .chip i { width: 34px; height: 34px; background: center / 190% no-repeat; }  /* у спрайтов широкие поля */
+  .chip.on { background: var(--accent); color: var(--accent-text); }
+  .chip:disabled { opacity: .45; }
+  #actions { display: flex; gap: 8px; margin-top: 14px; }
+  #actions button { flex: 1; padding: 12px; border: 0; border-radius: 12px; background: var(--card);
+                    color: var(--text); font: inherit; font-weight: 600; }
+  #actions #save { background: var(--accent); color: var(--accent-text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="stage"><img id="base" alt=""><div id="badge"></div></div>
+  <p class="hint" id="hint">Тапни вещь и двигай пальцем. Двумя пальцами — размер и поворот.</p>
+  <div id="controls" hidden>
+    <label class="row"><span>Размер</span><input id="scale" type="range" min="0.3" max="2.5" step="0.01"></label>
+    <label class="row"><span>Поворот</span><input id="rot" type="range" min="-180" max="180" step="1"></label>
+  </div>
+  <div id="chips"></div>
+  <div id="actions"><button id="reset">Сбросить позиции</button><button id="save">Сохранить</button></div>
+</div>
+<script type="module">
+const tg = window.Telegram?.WebApp;
+tg?.ready();
+tg?.expand();
+
+let P = {};
+try { P = JSON.parse(decodeURIComponent(location.hash.slice(1))); } catch {}
+const meta = await fetch("items.json").then(r => r.json());
+const ITEMS = Object.fromEntries(meta.items.map(it => [it.id, it]));
+const n = P.n || 0;
+let worn = (P.o || []).filter(id => ITEMS[id] && n >= ITEMS[id].day);
+let layout = P.l || {};
+let sel = null;
+
+const $ = id => document.getElementById(id);
+const stage = $("stage");
+$("base").src = `base_${meta.tiers.find(t => n >= t) || meta.tiers.at(-1)}.png`;
+$("badge").textContent = n;
+if (!n) $("hint").textContent = "Огонёк погас — вещи вернутся вместе с серией.";
+
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lay = id => ({ dx: ITEMS[id].dx, dy: ITEMS[id].dy, scale: 1, rot: 0, ...layout[id] });
+const z = id => meta.order.indexOf(ITEMS[id].slot);
+
+function draw() {
+  stage.querySelectorAll(".item").forEach(el => el.remove());
+  worn.sort((a, b) => z(a) - z(b));
+  for (const id of worn) {
+    const L = lay(id), img = new Image();
+    img.src = `items/${id}.png`;
+    img.className = "item" + (id === sel ? " sel" : "");
+    Object.assign(img.style, {
+      left: (meta.face[0] + L.dx) / meta.size * 100 + "%",
+      top: (meta.face[1] + L.dy) / meta.size * 100 + "%",
+      width: meta.sprite * L.scale / meta.size * 100 + "%",
+      transform: `translate(-50%,-50%) rotate(${-L.rot}deg)`,  // rot как в PIL: + против часовой
+    });
+    stage.append(img);
+  }
+  $("controls").hidden = !sel;
+  if (sel) { $("scale").value = lay(sel).scale; $("rot").value = lay(sel).rot; }
+  for (const b of $("chips").children) b.classList.toggle("on", worn.includes(b.dataset.id));
+}
+
+function set(id, patch) {
+  const L = { ...lay(id), ...patch };
+  layout[id] = { dx: clamp(Math.round(L.dx), -600, 600), dy: clamp(Math.round(L.dy), -600, 600),
+                 scale: clamp(+L.scale.toFixed(2), 0.3, 2.5), rot: ((Math.round(L.rot) + 540) % 360) - 180 };
+  draw();
+}
+
+for (const it of [...meta.items].sort((a, b) => a.day - b.day)) {
+  const b = document.createElement("button");
+  b.className = "chip";
+  b.dataset.id = it.id;
+  b.disabled = n < it.day;
+  b.innerHTML = `<i style="background-image:url(items/${it.id}.png)"></i><span>${b.disabled ? "🔒 " + it.day + " дн." : it.name}</span>`;
+  b.onclick = () => {
+    if (worn.includes(it.id)) { worn = worn.filter(x => x !== it.id); if (sel === it.id) sel = null; }
+    else { worn.push(it.id); sel = it.id; }
+    tg?.HapticFeedback?.selectionChanged();
+    draw();
+  };
+  $("chips").append(b);
+}
+
+// перетаскивание одним пальцем, размер и поворот — двумя
+const pts = new Map();
+let start = null;
+const units = () => meta.size / stage.clientWidth;
+function snapshot() {
+  start = sel && { L: lay(sel), p: [...pts.values()].map(p => ({ ...p })) };
+}
+function hit(e) {
+  const r = stage.getBoundingClientRect(), k = units();
+  const x = (e.clientX - r.left) * k - meta.face[0], y = (e.clientY - r.top) * k - meta.face[1];
+  return [...worn].reverse().find(id => {
+    const L = lay(id), half = meta.sprite * L.scale * 0.32;
+    return Math.abs(x - L.dx) < half && Math.abs(y - L.dy) < half;
+  });
+}
+stage.addEventListener("pointerdown", e => {
+  stage.setPointerCapture(e.pointerId);
+  pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pts.size === 1) { const id = hit(e); if (id) { sel = id; draw(); } }
+  snapshot();
+});
+stage.addEventListener("pointermove", e => {
+  if (!pts.has(e.pointerId)) return;
+  pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (!start || start.p.length !== pts.size) return;
+  const k = units(), now = [...pts.values()], was = start.p;
+  if (now.length === 1) {
+    set(sel, { dx: start.L.dx + (now[0].x - was[0].x) * k, dy: start.L.dy + (now[0].y - was[0].y) * k });
+    return;
+  }
+  const geo = ([a, b]) => ({ cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2,
+                             d: Math.hypot(b.x - a.x, b.y - a.y), ang: Math.atan2(b.y - a.y, b.x - a.x) });
+  const g0 = geo(was), g1 = geo(now);
+  set(sel, { dx: start.L.dx + (g1.cx - g0.cx) * k, dy: start.L.dy + (g1.cy - g0.cy) * k,
+             scale: start.L.scale * g1.d / Math.max(g0.d, 1),
+             rot: start.L.rot - (g1.ang - g0.ang) * 180 / Math.PI });
+});
+for (const ev of ["pointerup", "pointercancel"]) {
+  stage.addEventListener(ev, e => { pts.delete(e.pointerId); snapshot(); });
+}
+
+$("scale").oninput = e => sel && set(sel, { scale: +e.target.value });
+$("rot").oninput = e => sel && set(sel, { rot: +e.target.value });
+$("reset").onclick = () => { layout = {}; draw(); };
+$("save").onclick = () => {
+  const l = Object.fromEntries(worn.filter(id => layout[id]).map(id => [id, layout[id]]));
+  const data = JSON.stringify({ c: P.c, o: worn, l });
+  if (tg && tg.platform !== "unknown") tg.sendData(data);  // бот получит это и переоденет огонька
+  else alert("Открой через кнопку в боте, чтобы сохранить.\n" + data);
+};
+
+draw();
+</script>
+</body>
+</html>

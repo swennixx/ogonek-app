@@ -77,7 +77,7 @@ $("badge").textContent = n;
 if (!n && !meta.all) $("hint").textContent = "Огонёк погас — вещи вернутся вместе с серией.";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-const lay = id => ({ dx: ITEMS[id].dx, dy: ITEMS[id].dy, scale: 1, rot: ITEMS[id].rot, ...layout[id] });
+const lay = id => ({ dx: ITEMS[id].dx, dy: ITEMS[id].dy, scale: ITEMS[id].scale, rot: ITEMS[id].rot, ...layout[id] });
 const z = id => meta.order.indexOf(ITEMS[id].slot);
 
 function draw() {

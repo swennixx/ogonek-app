@@ -26,6 +26,10 @@
   #badge { position: absolute; left: 50%; bottom: 3%; transform: translateX(-50%); padding: 2px 18px;
            border: 3px solid var(--accent); border-radius: 999px; background: #1e1e28; color: #fff;
            font-weight: 700; font-size: 22px; }
+  #name { position: absolute; left: 0; right: 0; top: 5%; text-align: center; font-weight: 800;
+          font-size: clamp(18px, 7vw, 30px); color: #5a2a14; text-shadow: 0 2px 4px #0003; pointer-events: none; }
+  #nameInput { width: 100%; margin-top: 12px; padding: 12px 14px; border: 0; border-radius: 12px;
+               background: var(--card); color: var(--text); font: inherit; font-size: 16px; }
   .hint { margin: 8px 0; color: var(--hint); font-size: 13px; text-align: center; }
   .row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
   .row span { width: 72px; color: var(--hint); font-size: 13px; }
@@ -46,7 +50,8 @@
 </head>
 <body>
 <div class="wrap">
-  <div id="stage"><img id="base" alt=""><div id="badge"></div></div>
+  <div id="stage"><img id="base" alt=""><div id="name"></div><div id="badge"></div></div>
+  <input id="nameInput" maxlength="20" placeholder="Имя огонька" autocomplete="off">
   <p class="hint" id="hint">Тапни вещь и двигай пальцем. Двумя пальцами — размер и поворот.</p>
   <div id="controls" hidden>
     <label class="row"><span>Размер</span><input id="scale" type="range" min="0.3" max="2.5" step="0.01"></label>
@@ -74,6 +79,10 @@ const $ = id => document.getElementById(id);
 const stage = $("stage");
 $("base").src = `base_${meta.tiers.find(t => n >= t) || meta.tiers.at(-1)}.png`;
 $("badge").textContent = n;
+$("nameInput").value = P.nm || "";
+const showName = () => { $("name").textContent = $("nameInput").value.trim(); };
+$("nameInput").oninput = showName;
+showName();
 if (!n && !meta.all) $("hint").textContent = "Огонёк погас — вещи вернутся вместе с серией.";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -176,7 +185,7 @@ $("rot").oninput = e => sel && set(sel, { rot: +e.target.value });
 $("reset").onclick = () => { layout = {}; draw(); };
 $("save").onclick = () => {
   const l = Object.fromEntries(worn.filter(id => layout[id]).map(id => [id, layout[id]]));
-  const data = JSON.stringify({ c: P.c, o: worn, l });
+  const data = JSON.stringify({ c: P.c, o: worn, l, name: $("nameInput").value.trim().slice(0, 20) });
   if (tg && tg.platform !== "unknown") tg.sendData(data);  // бот получит это и переоденет огонька
   else alert("Открой через кнопку в боте, чтобы сохранить.\n" + data);
 };

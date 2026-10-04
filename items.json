@@ -13,7 +13,8 @@
   "ears",
   "hair",
   "head",
-  "above"
+  "above",
+  "prop"
  ],
  "face": [
   512,
@@ -21,6 +22,7 @@
  ],
  "size": 1024,
  "sprite": 440,
+ "all": true,
  "items": [
   {
    "id": "bowtie",
@@ -28,7 +30,8 @@
    "slot": "neck",
    "name": "бабочка",
    "dx": 0,
-   "dy": 165
+   "dy": 165,
+   "rot": 0
   },
   {
    "id": "cap",
@@ -36,7 +39,8 @@
    "slot": "head",
    "name": "кепка",
    "dx": 0,
-   "dy": -150
+   "dy": -150,
+   "rot": 0
   },
   {
    "id": "sunglasses",
@@ -44,7 +48,8 @@
    "slot": "eyes",
    "name": "тёмные очки",
    "dx": 0,
-   "dy": -5
+   "dy": -5,
+   "rot": 0
   },
   {
    "id": "flower",
@@ -52,7 +57,8 @@
    "slot": "hair",
    "name": "цветок",
    "dx": 125,
-   "dy": -95
+   "dy": -95,
+   "rot": 0
   },
   {
    "id": "party_hat",
@@ -60,7 +66,8 @@
    "slot": "head",
    "name": "праздничный колпак",
    "dx": 0,
-   "dy": -190
+   "dy": -190,
+   "rot": 0
   },
   {
    "id": "mustache",
@@ -68,7 +75,8 @@
    "slot": "face",
    "name": "усы",
    "dx": 0,
-   "dy": 70
+   "dy": 70,
+   "rot": 0
   },
   {
    "id": "crown",
@@ -76,7 +84,8 @@
    "slot": "head",
    "name": "корона",
    "dx": 0,
-   "dy": -160
+   "dy": -160,
+   "rot": 0
   },
   {
    "id": "scarf",
@@ -84,7 +93,8 @@
    "slot": "neck",
    "name": "шарф",
    "dx": 0,
-   "dy": 170
+   "dy": 170,
+   "rot": 0
   },
   {
    "id": "headphones",
@@ -92,7 +102,8 @@
    "slot": "ears",
    "name": "наушники",
    "dx": 0,
-   "dy": -20
+   "dy": -20,
+   "rot": 0
   },
   {
    "id": "round_glasses",
@@ -100,7 +111,8 @@
    "slot": "eyes",
    "name": "круглые очки",
    "dx": 0,
-   "dy": 0
+   "dy": 0,
+   "rot": 0
   },
   {
    "id": "halo",
@@ -108,7 +120,8 @@
    "slot": "above",
    "name": "нимб",
    "dx": 0,
-   "dy": -330
+   "dy": -330,
+   "rot": 0
   },
   {
    "id": "top_hat",
@@ -116,7 +129,8 @@
    "slot": "head",
    "name": "цилиндр",
    "dx": 0,
-   "dy": -185
+   "dy": -185,
+   "rot": 0
   },
   {
    "id": "monocle",
@@ -124,7 +138,8 @@
    "slot": "eyes",
    "name": "монокль",
    "dx": 0,
-   "dy": 0
+   "dy": 0,
+   "rot": 0
   },
   {
    "id": "chain",
@@ -132,7 +147,8 @@
    "slot": "neck",
    "name": "золотая цепь",
    "dx": 0,
-   "dy": 140
+   "dy": 140,
+   "rot": 0
   },
   {
    "id": "hair_bow",
@@ -140,7 +156,116 @@
    "slot": "hair",
    "name": "бантик",
    "dx": -120,
-   "dy": -100
+   "dy": -100,
+   "rot": 0
+  },
+  {
+   "id": "balloon",
+   "day": 2,
+   "slot": "prop",
+   "name": "шарик",
+   "dx": -300,
+   "dy": -210,
+   "rot": 0
+  },
+  {
+   "id": "club",
+   "day": 4,
+   "slot": "prop",
+   "name": "дубинка",
+   "dx": 300,
+   "dy": 40,
+   "rot": -25
+  },
+  {
+   "id": "heart",
+   "day": 6,
+   "slot": "prop",
+   "name": "сердечко",
+   "dx": -310,
+   "dy": -10,
+   "rot": 0
+  },
+  {
+   "id": "coffee",
+   "day": 9,
+   "slot": "prop",
+   "name": "кофе",
+   "dx": 300,
+   "dy": 180,
+   "rot": 0
+  },
+  {
+   "id": "sword",
+   "day": 12,
+   "slot": "prop",
+   "name": "меч",
+   "dx": -300,
+   "dy": 60,
+   "rot": 30
+  },
+  {
+   "id": "wand",
+   "day": 18,
+   "slot": "prop",
+   "name": "волшебная палочка",
+   "dx": 300,
+   "dy": -110,
+   "rot": 0
+  },
+  {
+   "id": "star",
+   "day": 24,
+   "slot": "prop",
+   "name": "звезда",
+   "dx": 300,
+   "dy": -280,
+   "rot": 0
+  },
+  {
+   "id": "flag",
+   "day": 33,
+   "slot": "prop",
+   "name": "флажок",
+   "dx": -310,
+   "dy": -40,
+   "rot": 0
+  },
+  {
+   "id": "pan",
+   "day": 45,
+   "slot": "prop",
+   "name": "сковородка",
+   "dx": -280,
+   "dy": 150,
+   "rot": 0
+  },
+  {
+   "id": "mic",
+   "day": 60,
+   "slot": "prop",
+   "name": "микрофон",
+   "dx": 290,
+   "dy": 60,
+   "rot": -20
+  },
+  {
+   "id": "umbrella",
+   "day": 80,
+   "slot": "prop",
+   "name": "зонтик",
+   "dx": 290,
+   "dy": -240,
+   "rot": -15
+  },
+  {
+   "id": "guitar",
+   "day": 120,
+   "slot": "prop",
+   "name": "гитара",
+   "dx": -290,
+   "dy": 100,
+   "rot": 25
   }
  ]
 }

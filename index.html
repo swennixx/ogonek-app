@@ -31,6 +31,8 @@
   .row span { width: 72px; color: var(--hint); font-size: 13px; }
   .row input { flex: 1; accent-color: var(--accent); }
   #chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  #chips h3 { width: 100%; margin: 10px 0 0; color: var(--hint); font-size: 13px; font-weight: 600;
+              text-transform: uppercase; letter-spacing: .04em; }
   .chip { display: flex; align-items: center; gap: 6px; padding: 6px 10px 6px 6px; border: 0;
           border-radius: 12px; background: var(--card); color: var(--text); font: inherit; font-size: 14px; }
   .chip i { width: 34px; height: 34px; background: center / 190% no-repeat; }  /* у спрайтов широкие поля */
@@ -63,7 +65,8 @@ try { P = JSON.parse(decodeURIComponent(location.hash.slice(1))); } catch {}
 const meta = await fetch("items.json").then(r => r.json());
 const ITEMS = Object.fromEntries(meta.items.map(it => [it.id, it]));
 const n = P.n || 0;
-let worn = (P.o || []).filter(id => ITEMS[id] && n >= ITEMS[id].day);
+const open = id => meta.all || n >= ITEMS[id].day;
+let worn = (P.o || []).filter(id => ITEMS[id] && open(id));
 let layout = P.l || {};
 let sel = null;
 
@@ -71,10 +74,10 @@ const $ = id => document.getElementById(id);
 const stage = $("stage");
 $("base").src = `base_${meta.tiers.find(t => n >= t) || meta.tiers.at(-1)}.png`;
 $("badge").textContent = n;
-if (!n) $("hint").textContent = "Огонёк погас — вещи вернутся вместе с серией.";
+if (!n && !meta.all) $("hint").textContent = "Огонёк погас — вещи вернутся вместе с серией.";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-const lay = id => ({ dx: ITEMS[id].dx, dy: ITEMS[id].dy, scale: 1, rot: 0, ...layout[id] });
+const lay = id => ({ dx: ITEMS[id].dx, dy: ITEMS[id].dy, scale: 1, rot: ITEMS[id].rot, ...layout[id] });
 const z = id => meta.order.indexOf(ITEMS[id].slot);
 
 function draw() {
@@ -94,7 +97,7 @@ function draw() {
   }
   $("controls").hidden = !sel;
   if (sel) { $("scale").value = lay(sel).scale; $("rot").value = lay(sel).rot; }
-  for (const b of $("chips").children) b.classList.toggle("on", worn.includes(b.dataset.id));
+  for (const b of $("chips").querySelectorAll(".chip")) b.classList.toggle("on", worn.includes(b.dataset.id));
 }
 
 function set(id, patch) {
@@ -104,11 +107,19 @@ function set(id, patch) {
   draw();
 }
 
-for (const it of [...meta.items].sort((a, b) => a.day - b.day)) {
+const isProp = it => it.slot === "prop";
+let section = null;
+for (const it of [...meta.items].sort((a, b) => isProp(a) - isProp(b) || a.day - b.day)) {
+  if (section !== isProp(it)) {
+    section = isProp(it);
+    const h = document.createElement("h3");
+    h.textContent = section ? "В руки" : "Надеть";
+    $("chips").append(h);
+  }
   const b = document.createElement("button");
   b.className = "chip";
   b.dataset.id = it.id;
-  b.disabled = n < it.day;
+  b.disabled = !open(it.id);
   b.innerHTML = `<i style="background-image:url(items/${it.id}.png)"></i><span>${b.disabled ? "🔒 " + it.day + " дн." : it.name}</span>`;
   b.onclick = () => {
     if (worn.includes(it.id)) { worn = worn.filter(x => x !== it.id); if (sel === it.id) sel = null; }
